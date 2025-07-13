@@ -12,7 +12,7 @@ async function checkMongoDB() {
     await client.connect();
     await client.db().admin().ping();
     await client.close();
-    return 'MongoDB: Kết nối thành công';
+    return 'MongoDB: Kết nối tahihihihành công';
   } catch (err) {
     return 'MongoDB: Kết nối thất bại - ' + err.message;
   }
