@@ -19,9 +19,6 @@ services:
     networks:
       - app_network
 
-volumes:
-  # Nếu app cần volume riêng, thêm ở đây
-
 networks:
   app_network:
     driver: bridge
