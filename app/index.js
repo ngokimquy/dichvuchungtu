@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const Minio = require('minio');
+const adminRouter = require('./routes/admin');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,14 +35,26 @@ async function checkMinIO() {
   }
 }
 
+// Middleware lấy subdomain
+function getSubdomain(req) {
+  const host = req.headers.host;
+  if (!host) return null;
+  const parts = host.split('.');
+  if (parts.length < 3) return null; // ví dụ: congty1.yourdomain.com
+  return parts[0];
+}
+
+// Trang chủ cho tenant
 app.get('/', async (req, res) => {
+  const subdomain = getSubdomain(req) || 'default';
   const mongoStatus = await checkMongoDB();
   const minioStatus = await checkMinIO();
   res.send(`
     <html>
       <head><title>Kết nối dịch vụ</title></head>
       <body style="font-family: Arial; margin: 40px;">
-        <h2>Kết quả kiểm tra kết nối</h2>
+        <h2>Chào mừng bạn đến với trang của <span style="color:blue">${subdomain}</span></h2>
+        <h3>Kết quả kiểm tra kết nối</h3>
         <ul>
           <li>${mongoStatus}</li>
           <li>${minioStatus}</li>
@@ -50,6 +63,9 @@ app.get('/', async (req, res) => {
     </html>
   `);
 });
+
+// Route admin
+app.use('/admin', adminRouter);
 
 app.listen(port, () => {
   console.log(`Server đang chạy tại http://localhost:${port}`);
