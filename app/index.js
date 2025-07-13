@@ -44,21 +44,36 @@ function getSubdomain(req) {
   return parts[0];
 }
 
+// Danh sách tenant mẫu
+const tenants = {
+  tenant1: { name: 'Công ty Kim Cương 1' },
+  tenant2: { name: 'Công ty Kim Cương 2' },
+  default: { name: 'Trang chủ Kim Cương Xanh' }
+};
+
 // Trang chủ cho tenant
 app.get('/', async (req, res) => {
   const subdomain = getSubdomain(req) || 'default';
-  const mongoStatus = await checkMongoDB();
-  const minioStatus = await checkMinIO();
+  const tenant = tenants[subdomain] || tenants['default'];
+  console.log(`Truy cập tenant: ${subdomain} - ${tenant.name}`);
   res.send(`
     <html>
-      <head><title>Kết nối dịch vụ</title></head>
-      <body style="font-family: Arial; margin: 40px;">
-        <h2>Chào mừng bạn đến với trang của <span style="color:blue">${subdomain}</span></h2>
-        <h3>Kết quả kiểm tra kết nối</h3>
-        <ul>
-          <li>${mongoStatus}</li>
-          <li>${minioStatus}</li>
-        </ul>
+      <head>
+        <title>Welcome ${tenant.name}</title>
+        <style>
+          body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 0; }
+          .container { max-width: 500px; margin: 80px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 40px; text-align: center; }
+          h1 { color: #2a7be4; margin-bottom: 16px; }
+          .subdomain { font-size: 1.5em; color: #1abc9c; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Welcome!</h1>
+          <div>Chào mừng bạn đến với website của:</div>
+          <div class="subdomain">${tenant.name}</div>
+          <div style="margin-top:24px; color:#888;">Subdomain: ${subdomain}.kimcuongxanh.com</div>
+        </div>
       </body>
     </html>
   `);
